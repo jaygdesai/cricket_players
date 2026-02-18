@@ -9,9 +9,7 @@
   --color-text: #f1f5f9;
 }
 
-* {
-  margin: 0;
-  padding: 0;
+*, *::before, *::after {
   box-sizing: border-box;
 }
 
@@ -25,8 +23,6 @@ body {
 
 #root {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
 }
 
 ::-webkit-scrollbar { width: 6px; }

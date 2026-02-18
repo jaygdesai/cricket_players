@@ -13,7 +13,12 @@ const navItems = [
   { path: '/profile', label: 'Profile', icon: '👤' },
 ];
 
-export default function Navbar() {
+interface NavbarProps {
+  sidebarOpen: boolean;
+  onToggleSidebar: () => void;
+}
+
+export default function Navbar({ sidebarOpen, onToggleSidebar }: NavbarProps) {
   const location = useLocation();
   const coins = useGameStore((s) => s.coins);
 
@@ -52,11 +57,16 @@ export default function Navbar() {
       </nav>
 
       {/* Desktop: Sidebar navigation */}
-      <aside className="hidden md:flex fixed top-0 left-0 h-screen z-50 flex-col bg-slate-900 border-r border-slate-700 w-20 lg:w-64">
+      <aside
+        className={`hidden md:flex fixed top-0 left-0 h-screen z-40 flex-col bg-slate-900 border-r border-slate-700 w-64 transition-transform duration-300 ease-in-out ${
+          sidebarOpen ? '' : 'pointer-events-none'
+        }`}
+        style={{ transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)' }}
+      >
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3 px-4 py-4 border-b border-slate-700 no-underline">
           <span className="text-2xl">🏏</span>
-          <span className="hidden lg:block text-lg font-bold text-amber-400">Cricket Players</span>
+          <span className="text-lg font-bold text-amber-400">Cricket Players</span>
         </Link>
 
         {/* Nav items */}
@@ -74,7 +84,7 @@ export default function Navbar() {
                 }`}
               >
                 <span className="text-xl w-8 text-center">{item.icon}</span>
-                <span className="hidden lg:block font-medium">{item.label}</span>
+                <span className="font-medium">{item.label}</span>
               </Link>
             );
           })}
@@ -82,12 +92,31 @@ export default function Navbar() {
 
         {/* Coin counter at bottom */}
         <div className="border-t border-slate-700 p-4">
-          <div className="flex items-center justify-center lg:justify-start gap-2 bg-slate-800 px-3 py-2 rounded-lg">
+          <div className="flex items-center gap-2 bg-slate-800 px-3 py-2 rounded-lg">
             <span className="text-amber-400 text-xl">🪙</span>
-            <span className="hidden lg:block font-bold text-amber-300">{coins.toLocaleString()}</span>
+            <span className="font-bold text-amber-300">{coins.toLocaleString()}</span>
           </div>
         </div>
       </aside>
+
+      {/* Desktop: Toggle button (always visible, higher z-index) */}
+      <button
+        type="button"
+        onClick={onToggleSidebar}
+        className="hidden md:flex fixed top-4 z-50 items-center justify-center w-10 h-10 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-slate-300 hover:text-white transition-all duration-300 cursor-pointer"
+        style={{ left: sidebarOpen ? '272px' : '16px' }}
+        aria-label={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+      >
+        {sidebarOpen ? (
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+          </svg>
+        ) : (
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+          </svg>
+        )}
+      </button>
     </>
   );
 }
