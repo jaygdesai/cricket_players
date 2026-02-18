@@ -25,7 +25,7 @@ export default function Collection() {
   }, [filterRarity, filterRole, showOwned, ownedCardIds]);
 
   return (
-    <div className="pt-16 pb-24 px-4 max-w-lg mx-auto">
+    <div className="pt-16 pb-24 px-4 max-w-lg mx-auto md:pt-8 md:pb-8 md:max-w-4xl lg:max-w-6xl">
       <h1 className="text-xl font-bold mb-1 mt-4">My Collection</h1>
       <p className="text-sm text-slate-400 mb-4">
         {ownedCardIds.length} / {players.length} cards collected ({Math.round((ownedCardIds.length / players.length) * 100)}%)
@@ -71,7 +71,7 @@ export default function Collection() {
       </div>
 
       {/* Card Grid */}
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
         {filteredPlayers.map((player) => (
           <PlayerCardComponent
             key={player.id}

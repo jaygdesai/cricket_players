@@ -20,7 +20,7 @@ export default function DreamXI() {
   }, [selectedPlayers]);
 
   return (
-    <div className="pt-16 pb-24 px-4 max-w-lg mx-auto">
+    <div className="pt-16 pb-24 px-4 max-w-lg mx-auto md:pt-8 md:pb-8 md:max-w-4xl lg:max-w-6xl">
       <div className="flex justify-between items-center mt-4 mb-4">
         <div>
           <h1 className="text-xl font-bold">Dream XI</h1>
@@ -44,7 +44,7 @@ export default function DreamXI() {
       {dreamXI.length > 0 && (
         <div className="mb-6">
           <h2 className="text-sm font-bold text-amber-400 mb-2">Your XI:</h2>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-11 gap-2">
             {selectedPlayers.map((player) => (
               <motion.div key={player.id} layout>
                 <PlayerCardComponent
@@ -78,7 +78,7 @@ export default function DreamXI() {
           <p>No cards yet! Open packs in the Shop to get started.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
           {ownedPlayers.filter((p) => !dreamXI.includes(p.id)).map((player) => (
             <PlayerCardComponent
               key={player.id}

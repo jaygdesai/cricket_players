@@ -69,7 +69,7 @@ export default function Multiplayer() {
 
   if (state === 'menu') {
     return (
-      <div className="pt-16 pb-24 px-4 max-w-lg mx-auto flex flex-col items-center justify-center min-h-[60vh]">
+      <div className="pt-16 pb-24 px-4 max-w-lg mx-auto md:pt-8 md:pb-8 md:max-w-4xl lg:max-w-6xl flex flex-col items-center justify-center min-h-[60vh]">
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center">
           <span className="text-6xl mb-4 block">⚔️</span>
           <h1 className="text-2xl font-bold mb-2">Multiplayer Battle</h1>
@@ -83,7 +83,7 @@ export default function Multiplayer() {
 
   if (state === 'waiting') {
     return (
-      <div className="pt-16 pb-24 px-4 max-w-lg mx-auto flex flex-col items-center justify-center min-h-[60vh]">
+      <div className="pt-16 pb-24 px-4 max-w-lg mx-auto md:pt-8 md:pb-8 md:max-w-4xl lg:max-w-6xl flex flex-col items-center justify-center min-h-[60vh]">
         <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }} className="text-6xl mb-4">
           ⚔️
         </motion.div>
@@ -96,7 +96,7 @@ export default function Multiplayer() {
   if (state === 'results') {
     const won = myScore > opponentScore;
     return (
-      <div className="pt-16 pb-24 px-4 max-w-lg mx-auto text-center mt-8">
+      <div className="pt-16 pb-24 px-4 max-w-lg mx-auto md:pt-8 md:pb-8 md:max-w-4xl lg:max-w-6xl text-center mt-8">
         <span className="text-6xl mb-4 block">{won ? '🏆' : '😤'}</span>
         <h1 className="text-2xl font-bold mb-4">{won ? 'Victory!' : 'Defeat'}</h1>
         <div className="bg-slate-800 rounded-xl p-4 mb-4">

@@ -10,7 +10,7 @@ export default function Profile() {
   const { user, signIn, signOutUser } = useAuthStore();
 
   return (
-    <div className="pt-16 pb-24 px-4 max-w-lg mx-auto">
+    <div className="pt-16 pb-24 px-4 max-w-lg mx-auto md:pt-8 md:pb-8 md:max-w-4xl lg:max-w-6xl">
       <h1 className="text-xl font-bold mt-4 mb-4">Profile</h1>
 
       {/* Auth section */}
@@ -32,7 +32,7 @@ export default function Profile() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         <div className="bg-slate-800 rounded-xl p-4 text-center">
           <p className="text-2xl font-bold text-amber-400">🪙 {coins.toLocaleString()}</p>
           <p className="text-xs text-slate-400">Coins</p>

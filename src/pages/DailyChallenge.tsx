@@ -72,7 +72,7 @@ export default function DailyChallenge() {
 
   if (alreadyCompleted && !finished) {
     return (
-      <div className="pt-16 pb-24 px-4 max-w-lg mx-auto flex flex-col items-center justify-center min-h-[60vh]">
+      <div className="pt-16 pb-24 px-4 max-w-lg mx-auto md:pt-8 md:pb-8 md:max-w-4xl lg:max-w-6xl flex flex-col items-center justify-center min-h-[60vh]">
         <span className="text-6xl mb-4">✅</span>
         <h1 className="text-2xl font-bold mb-2">Challenge Complete!</h1>
         <p className="text-slate-400">Come back tomorrow for a new daily challenge.</p>
@@ -82,7 +82,7 @@ export default function DailyChallenge() {
 
   if (finished) {
     return (
-      <div className="pt-16 pb-24 px-4 max-w-lg mx-auto text-center mt-8">
+      <div className="pt-16 pb-24 px-4 max-w-lg mx-auto md:pt-8 md:pb-8 md:max-w-4xl lg:max-w-6xl text-center mt-8">
         <span className="text-6xl mb-4 block">🎉</span>
         <h1 className="text-2xl font-bold mb-4">Daily Challenge Complete!</h1>
         <div className="bg-slate-800 rounded-xl p-4 mb-4">
@@ -116,7 +116,7 @@ export default function DailyChallenge() {
   }
 
   return (
-    <div className="pt-16 pb-24 px-4 max-w-lg mx-auto flex flex-col items-center justify-center min-h-[60vh]">
+    <div className="pt-16 pb-24 px-4 max-w-lg mx-auto md:pt-8 md:pb-8 md:max-w-4xl lg:max-w-6xl flex flex-col items-center justify-center min-h-[60vh]">
       <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center">
         <span className="text-6xl mb-4 block">📅</span>
         <h1 className="text-2xl font-bold mb-2">Daily Challenge</h1>

@@ -36,7 +36,7 @@ export default function Leaderboard() {
   };
 
   return (
-    <div className="pt-16 pb-24 px-4 max-w-lg mx-auto">
+    <div className="pt-16 pb-24 px-4 max-w-lg mx-auto md:pt-8 md:pb-8 md:max-w-4xl lg:max-w-6xl">
       <h1 className="text-xl font-bold mt-4 mb-4">🏆 Leaderboard</h1>
 
       {/* Tabs */}

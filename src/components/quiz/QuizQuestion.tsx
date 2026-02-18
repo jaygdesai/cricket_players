@@ -48,7 +48,7 @@ export default function QuizQuestionComponent({ question, questionNumber, totalQ
   const timerColor = timeLeft > 10 ? 'text-green-400' : timeLeft > 5 ? 'text-amber-400' : 'text-red-400';
 
   return (
-    <div className="max-w-lg mx-auto w-full px-4">
+    <div className="max-w-lg md:max-w-xl lg:max-w-2xl mx-auto w-full px-4">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <span className="text-sm text-slate-400">

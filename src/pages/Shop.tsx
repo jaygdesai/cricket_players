@@ -30,11 +30,11 @@ export default function Shop() {
   };
 
   return (
-    <div className="pt-16 pb-24 px-4 max-w-lg mx-auto">
+    <div className="pt-16 pb-24 px-4 max-w-lg mx-auto md:pt-8 md:pb-8 md:max-w-4xl lg:max-w-6xl">
       <h1 className="text-xl font-bold mt-4 mb-1">Card Shop</h1>
       <p className="text-sm text-slate-400 mb-6">Spend coins to open card packs</p>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
         {PACK_TYPES.map((pack, i) => (
           <motion.div
             key={pack.id}
