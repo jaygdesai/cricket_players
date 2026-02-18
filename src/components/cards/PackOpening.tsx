@@ -39,7 +39,7 @@ export default function PackOpening({ cards, onComplete, packName }: PackOpening
         {packName}
       </motion.h2>
 
-      <div className="flex flex-wrap justify-center gap-3 mb-6 max-w-lg">
+      <div className="flex flex-wrap justify-center gap-3 mb-6 max-w-lg md:max-w-2xl lg:max-w-4xl">
         {cards.map((card, i) => (
           <AnimatePresence key={card.id + i}>
             {i <= revealedIndex ? (

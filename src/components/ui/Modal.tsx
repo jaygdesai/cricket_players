@@ -23,7 +23,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-slate-800 rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto border border-slate-700"
+            className="bg-slate-800 rounded-2xl p-6 max-w-md md:max-w-lg lg:max-w-2xl w-full max-h-[80vh] overflow-y-auto border border-slate-700"
           >
             {title && (
               <div className="flex justify-between items-center mb-4">

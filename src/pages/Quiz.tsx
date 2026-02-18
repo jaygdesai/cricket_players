@@ -75,7 +75,7 @@ export default function Quiz() {
 
   if (state === 'menu') {
     return (
-      <div className="pt-16 pb-24 px-4 max-w-lg mx-auto flex flex-col items-center justify-center min-h-[60vh]">
+      <div className="pt-16 pb-24 px-4 max-w-lg mx-auto md:pt-8 md:pb-8 md:max-w-4xl lg:max-w-6xl flex flex-col items-center justify-center min-h-[60vh]">
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center">
           <span className="text-6xl mb-4 block">❓</span>
           <h1 className="text-2xl font-bold mb-2">Quiz Mode</h1>
@@ -90,12 +90,12 @@ export default function Quiz() {
   if (state === 'results') {
     const totalCoins = calculateCoins(correctCount, quizQuestions.length, streak);
     return (
-      <div className="pt-16 pb-24 px-4 max-w-lg mx-auto">
+      <div className="pt-16 pb-24 px-4 max-w-lg mx-auto md:pt-8 md:pb-8 md:max-w-4xl lg:max-w-6xl">
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center mt-8">
           <span className="text-6xl mb-4 block">{correctCount >= 8 ? '🏆' : correctCount >= 5 ? '👏' : '📚'}</span>
           <h1 className="text-2xl font-bold mb-4">Quiz Complete!</h1>
           <div className="bg-slate-800 rounded-xl p-6 mb-4">
-            <div className="grid grid-cols-2 gap-4 text-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
               <div><p className="text-2xl font-bold text-green-400">{correctCount}/10</p><p className="text-xs text-slate-400">Correct</p></div>
               <div><p className="text-2xl font-bold text-blue-400">{score}</p><p className="text-xs text-slate-400">Score</p></div>
               <div><p className="text-2xl font-bold text-amber-400">+{totalCoins}</p><p className="text-xs text-slate-400">Coins Earned</p></div>

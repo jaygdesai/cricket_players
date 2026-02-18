@@ -31,9 +31,9 @@ const countryFlag: Record<string, string> = {
 };
 
 const sizeClasses = {
-  sm: 'w-28 h-40',
-  md: 'w-36 h-52',
-  lg: 'w-44 h-64',
+  sm: 'w-28 h-40 md:w-32 md:h-44 lg:w-36 lg:h-52',
+  md: 'w-36 h-52 md:w-40 md:h-56 lg:w-44 lg:h-64',
+  lg: 'w-44 h-64 md:w-52 md:h-72 lg:w-56 lg:h-80',
 };
 
 export default function PlayerCardComponent({ player, owned = true, onClick, size = 'md', selected = false }: PlayerCardProps) {

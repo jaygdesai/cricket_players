@@ -19,7 +19,7 @@ export default function Home() {
   const collectionCount = useCollectionStore((s) => s.ownedCardIds.length);
 
   return (
-    <div className="pt-16 pb-24 px-4 max-w-lg mx-auto">
+    <div className="pt-16 pb-24 px-4 max-w-lg mx-auto md:pt-8 md:pb-8 md:max-w-4xl lg:max-w-6xl">
       {/* Hero */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
@@ -47,7 +47,7 @@ export default function Home() {
       </div>
 
       {/* Menu Grid */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {menuItems.map((item, i) => (
           <motion.div
             key={item.path}
