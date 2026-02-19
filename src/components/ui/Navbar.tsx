@@ -4,11 +4,12 @@ import { useGameStore } from '../../store/useGameStore';
 const navItems = [
   { path: '/', label: 'Home', icon: '🏏' },
   { path: '/quiz', label: 'Quiz', icon: '❓' },
+  { path: '/battle', label: 'Battle', icon: '⚔️' },
   { path: '/collection', label: 'Cards', icon: '🃏' },
   { path: '/shop', label: 'Shop', icon: '🛒' },
   { path: '/dream-xi', label: 'XI', icon: '⭐' },
   { path: '/daily', label: 'Daily', icon: '📅' },
-  { path: '/multiplayer', label: 'Battle', icon: '⚔️' },
+  { path: '/multiplayer', label: 'PvP', icon: '👥' },
   { path: '/leaderboard', label: 'Ranks', icon: '🏆' },
   { path: '/profile', label: 'Profile', icon: '👤' },
 ];

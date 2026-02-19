@@ -5,12 +5,13 @@ import { useCollectionStore } from '../store/useCollectionStore';
 import { players } from '../data/players';
 
 const menuItems = [
+  { path: '/battle', title: 'Card Battle', desc: 'T20 matches with your cards', icon: '⚔️', color: 'from-red-600 to-red-800' },
   { path: '/quiz', title: 'Quiz Mode', desc: 'Test your cricket knowledge', icon: '❓', color: 'from-blue-600 to-blue-800' },
   { path: '/daily', title: 'Daily Challenge', desc: 'New questions every day', icon: '📅', color: 'from-green-600 to-green-800' },
   { path: '/shop', title: 'Card Shop', desc: 'Open packs & collect players', icon: '🛒', color: 'from-purple-600 to-purple-800' },
   { path: '/collection', title: 'My Collection', desc: 'View your player cards', icon: '🃏', color: 'from-amber-600 to-amber-800' },
-  { path: '/dream-xi', title: 'Dream XI', desc: 'Build your ultimate team', icon: '⭐', color: 'from-red-600 to-red-800' },
-  { path: '/multiplayer', title: 'Multiplayer', desc: '1v1 quiz battles', icon: '⚔️', color: 'from-pink-600 to-pink-800' },
+  { path: '/dream-xi', title: 'Dream XI', desc: 'Build your ultimate team', icon: '⭐', color: 'from-orange-600 to-orange-800' },
+  { path: '/multiplayer', title: 'PvP Battle', desc: '1v1 quiz battles', icon: '👥', color: 'from-pink-600 to-pink-800' },
   { path: '/leaderboard', title: 'Leaderboard', desc: 'Global rankings', icon: '🏆', color: 'from-yellow-600 to-yellow-800' },
 ];
 

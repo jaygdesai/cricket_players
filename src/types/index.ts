@@ -88,3 +88,70 @@ export const RARITY_GRADIENTS: RarityColor = {
   epic: 'from-purple-400 to-purple-600',
   legendary: 'from-yellow-400 to-amber-600',
 };
+
+// Battle Types
+export type ShotType = 'defend' | 'push' | 'attack' | 'slog';
+export type DeliveryType = 'line_length' | 'yorker' | 'bouncer' | 'slower';
+
+export interface ShotConfig {
+  type: ShotType;
+  label: string;
+  icon: string;
+  risk: 'low' | 'medium' | 'high' | 'very_high';
+  minRuns: number;
+  maxRuns: number;
+  baseSuccessRate: number;
+  statModifier: 'battingAvg' | 'rating' | 'highScore';
+}
+
+export interface DeliveryConfig {
+  type: DeliveryType;
+  label: string;
+  icon: string;
+  wicketChance: number;
+  runModifier: number;
+}
+
+export interface BallOutcome {
+  runs: number;
+  isWicket: boolean;
+  isExtra: boolean;
+  extraType?: 'wide' | 'no_ball';
+  description: string;
+  shotType: ShotType;
+  deliveryType: DeliveryType;
+}
+
+export interface InningsState {
+  runs: number;
+  wickets: number;
+  balls: number;
+  overs: number;
+  ballsThisOver: number;
+  currentBatsmanIndex: number;
+  currentBowlerIndex: number;
+  ballHistory: BallOutcome[];
+}
+
+export interface BattleTeam {
+  name: string;
+  players: PlayerCard[];
+  flag?: string;
+}
+
+export type BattlePhase = 'setup' | 'toss' | 'batting' | 'bowling' | 'innings_break' | 'result';
+
+export interface MatchRewards {
+  coins: number;
+  xp: number;
+  trophyPoints: number;
+  bonuses: string[];
+}
+
+export interface AITeam {
+  id: string;
+  name: string;
+  flag: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  playerIds: string[];
+}

@@ -17,7 +17,7 @@ export const players: PlayerCard[] = [
     country: 'Australia',
     role: 'batsman',
     rarity: 'legendary',
-    stats: { matches: 52, battingAvg: 99.94, bowlingAvg: 36.00, highScore: 334, wickets: 2, rating: 99 },
+    stats: { matches: 52, battingAvg: 99.94, bowlingAvg: 36, highScore: 334, wickets: 2, rating: 99 },
     image: '',
   },
   {
@@ -26,7 +26,7 @@ export const players: PlayerCard[] = [
     country: 'West Indies',
     role: 'batsman',
     rarity: 'legendary',
-    stats: { matches: 308, battingAvg: 47.00, bowlingAvg: 35.83, highScore: 291, wickets: 118, rating: 98 },
+    stats: { matches: 308, battingAvg: 47, bowlingAvg: 35.83, highScore: 291, wickets: 118, rating: 98 },
     image: '',
   },
   {
@@ -47,7 +47,6 @@ export const players: PlayerCard[] = [
     stats: { matches: 460, battingAvg: 16.52, bowlingAvg: 23.62, highScore: 257, wickets: 916, rating: 97 },
     image: '',
   },
-
   // ========== EPIC (15) ==========
   {
     id: 'p006',
@@ -91,7 +90,7 @@ export const players: PlayerCard[] = [
     country: 'New Zealand',
     role: 'batsman',
     rarity: 'epic',
-    stats: { matches: 251, battingAvg: 48.21, bowlingAvg: 38.50, highScore: 251, wickets: 55, rating: 93 },
+    stats: { matches: 251, battingAvg: 48.21, bowlingAvg: 38.5, highScore: 251, wickets: 55, rating: 93 },
     image: '',
   },
   {
@@ -109,7 +108,7 @@ export const players: PlayerCard[] = [
     country: 'Australia',
     role: 'bowler',
     rarity: 'epic',
-    stats: { matches: 185, battingAvg: 17.20, bowlingAvg: 23.48, highScore: 56, wickets: 390, rating: 93 },
+    stats: { matches: 185, battingAvg: 17.2, bowlingAvg: 23.48, highScore: 56, wickets: 390, rating: 93 },
     image: '',
   },
   {
@@ -127,7 +126,7 @@ export const players: PlayerCard[] = [
     country: 'South Africa',
     role: 'batsman',
     rarity: 'epic',
-    stats: { matches: 420, battingAvg: 50.66, bowlingAvg: 29.30, highScore: 278, wickets: 25, rating: 95 },
+    stats: { matches: 420, battingAvg: 50.66, bowlingAvg: 29.3, highScore: 278, wickets: 25, rating: 95 },
     image: '',
   },
   {
@@ -145,7 +144,7 @@ export const players: PlayerCard[] = [
     country: 'Australia',
     role: 'batsman',
     rarity: 'epic',
-    stats: { matches: 560, battingAvg: 46.64, bowlingAvg: 42.50, highScore: 257, wickets: 39, rating: 96 },
+    stats: { matches: 560, battingAvg: 46.64, bowlingAvg: 42.5, highScore: 257, wickets: 39, rating: 96 },
     image: '',
   },
   {
@@ -154,7 +153,7 @@ export const players: PlayerCard[] = [
     country: 'South Africa',
     role: 'all-rounder',
     rarity: 'epic',
-    stats: { matches: 519, battingAvg: 49.10, bowlingAvg: 32.65, highScore: 224, wickets: 577, rating: 96 },
+    stats: { matches: 519, battingAvg: 49.1, bowlingAvg: 32.65, highScore: 224, wickets: 577, rating: 96 },
     image: '',
   },
   {
@@ -184,7 +183,6 @@ export const players: PlayerCard[] = [
     stats: { matches: 378, battingAvg: 7.37, bowlingAvg: 22.02, highScore: 61, wickets: 949, rating: 96 },
     image: '',
   },
-
   // ========== RARE (30) ==========
   {
     id: 'p021',
@@ -456,7 +454,6 @@ export const players: PlayerCard[] = [
     stats: { matches: 95, battingAvg: 40.78, bowlingAvg: 0, highScore: 117, wickets: 0, rating: 85 },
     image: '',
   },
-
   // ========== COMMON (50) ==========
   {
     id: 'p051',

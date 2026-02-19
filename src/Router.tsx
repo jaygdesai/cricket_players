@@ -8,6 +8,7 @@ import DailyChallenge from './pages/DailyChallenge';
 import Leaderboard from './pages/Leaderboard';
 import Multiplayer from './pages/Multiplayer';
 import Profile from './pages/Profile';
+import Battle from './pages/Battle';
 
 export default function AppRouter() {
   return (
@@ -21,6 +22,7 @@ export default function AppRouter() {
       <Route path="/leaderboard" element={<Leaderboard />} />
       <Route path="/multiplayer" element={<Multiplayer />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/battle" element={<Battle />} />
     </Routes>
   );
 }
