@@ -22,6 +22,7 @@ const countryFlag: Record<string, string> = {
   Bangladesh: '🇧🇩',
   Afghanistan: '🇦🇫',
   Zimbabwe: '🇿🇼',
+  Ireland: '🇮🇪',
 };
 
 const sizeClasses = {
