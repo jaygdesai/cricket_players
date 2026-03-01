@@ -1,15 +1,24 @@
 import { useState, useMemo } from 'react';
 import { players } from '../data/players';
 import { useCollectionStore } from '../store/useCollectionStore';
+import { useGameStore } from '../store/useGameStore';
 import PlayerCardComponent from '../components/cards/PlayerCard';
 import Modal from '../components/ui/Modal';
 import type { PlayerCard } from '../types';
+
+const CARD_PRICES: Record<string, number> = {
+  legendary: 100,
+  epic: 90,
+  rare: 80,
+  common: 70,
+};
 
 type FilterRarity = 'all' | 'common' | 'rare' | 'epic' | 'legendary';
 type FilterRole = 'all' | 'batsman' | 'bowler' | 'all-rounder' | 'wicket-keeper';
 
 export default function Collection() {
-  const { ownedCardIds } = useCollectionStore();
+  const { ownedCardIds, addCard, removeCard } = useCollectionStore();
+  const { coins, spendCoins, addCoins } = useGameStore();
   const [filterRarity, setFilterRarity] = useState<FilterRarity>('all');
   const [filterRole, setFilterRole] = useState<FilterRole>('all');
   const [selectedCard, setSelectedCard] = useState<PlayerCard | null>(null);
@@ -105,6 +114,34 @@ export default function Collection() {
               <div className="bg-slate-700 rounded-lg p-2"><span className="text-slate-400">Wickets:</span> {selectedCard.stats.wickets}</div>
               <div className="bg-slate-700 rounded-lg p-2"><span className="text-slate-400">Rating:</span> <span className="text-amber-400 font-bold">{selectedCard.stats.rating}</span></div>
             </div>
+            {(() => {
+              const owned = ownedCardIds.includes(selectedCard.id);
+              const buyPrice = CARD_PRICES[selectedCard.rarity] ?? 70;
+              const sellPrice = Math.floor(buyPrice / 2);
+              return owned ? (
+                <button
+                  onClick={() => {
+                    addCoins(sellPrice);
+                    removeCard(selectedCard.id);
+                  }}
+                  className="mt-4 w-full py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white font-semibold cursor-pointer transition-colors"
+                >
+                  Sell for {sellPrice} coins
+                </button>
+              ) : (
+                <button
+                  disabled={coins < buyPrice}
+                  onClick={() => {
+                    if (spendCoins(buyPrice)) {
+                      addCard(selectedCard.id);
+                    }
+                  }}
+                  className="mt-4 w-full py-2 rounded-lg bg-green-600 hover:bg-green-500 text-white font-semibold cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-green-600"
+                >
+                  Buy for {buyPrice} coins
+                </button>
+              );
+            })()}
           </div>
         )}
       </Modal>

@@ -7,6 +7,7 @@ interface CollectionState {
   dreamXI: string[];
   addCard: (cardId: string) => void;
   addCards: (cardIds: string[]) => void;
+  removeCard: (cardId: string) => void;
   hasCard: (cardId: string) => boolean;
   setDreamXI: (cardIds: string[]) => void;
   addToDreamXI: (cardId: string) => boolean;
@@ -28,6 +29,11 @@ export const useCollectionStore = create<CollectionState>()(
         const newIds = cardIds.filter(id => !s.ownedCardIds.includes(id));
         return { ownedCardIds: [...s.ownedCardIds, ...newIds] };
       }),
+
+      removeCard: (cardId) => set((s) => ({
+        ownedCardIds: s.ownedCardIds.filter(id => id !== cardId),
+        dreamXI: s.dreamXI.filter(id => id !== cardId),
+      })),
 
       hasCard: (cardId) => get().ownedCardIds.includes(cardId),
 

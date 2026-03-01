@@ -5,7 +5,7 @@ export const PACK_TYPES: CardPack[] = [
   {
     id: 'bronze',
     name: 'Bronze Pack',
-    price: 50,
+    price: 250,
     cardCount: 3,
     rarityWeights: { common: 0.75, rare: 0.20, epic: 0.04, legendary: 0.01 },
     image: '🥉',
@@ -13,7 +13,7 @@ export const PACK_TYPES: CardPack[] = [
   {
     id: 'silver',
     name: 'Silver Pack',
-    price: 150,
+    price: 450,
     cardCount: 5,
     rarityWeights: { common: 0.50, rare: 0.35, epic: 0.12, legendary: 0.03 },
     image: '🥈',
@@ -21,7 +21,7 @@ export const PACK_TYPES: CardPack[] = [
   {
     id: 'gold',
     name: 'Gold Pack',
-    price: 300,
+    price: 600,
     cardCount: 7,
     rarityWeights: { common: 0.25, rare: 0.40, epic: 0.25, legendary: 0.10 },
     image: '🥇',
