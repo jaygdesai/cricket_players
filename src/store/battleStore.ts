@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { PlayerCard, BattlePhase, InningsState, BallOutcome, BattleTeam, MatchRewards } from '../types';
+import type { PlayerCard, BattlePhase, InningsState, BallOutcome, BattleTeam, MatchRewards, BowlerSpellStats, FieldPlacement } from '../types';
 
 interface BattleStore {
   // Match setup
@@ -21,6 +21,14 @@ interface BattleStore {
   lastBallResult: BallOutcome | null;
   isAnimating: boolean;
 
+  // Bowling phase state
+  needsBowlerSelection: boolean;
+  needsFieldPlacement: boolean;
+  selectedFieldPlacement: FieldPlacement | null;
+  aiFieldPlacement: FieldPlacement | null;
+  maxOversPerBowler: number;
+  specialDeliveryCooldowns: Record<string, number>; // bowlerId -> balls remaining
+
   // Match settings
   totalOvers: number;
   totalBalls: number;
@@ -41,8 +49,14 @@ interface BattleStore {
   recordBall: (outcome: BallOutcome) => void;
   nextBatsman: () => void;
   nextBowler: () => void;
+  selectBowler: (bowlerId: string) => void;
   setLastBallResult: (result: BallOutcome | null) => void;
   setIsAnimating: (animating: boolean) => void;
+  setNeedsBowlerSelection: (needs: boolean) => void;
+  setFieldPlacement: (placement: FieldPlacement) => void;
+  setAIFieldPlacement: (placement: FieldPlacement) => void;
+  useSpecialDelivery: (bowlerId: string, cooldown: number) => void;
+  tickCooldowns: () => void;
   endInnings: () => void;
   endMatch: (rewards: MatchRewards) => void;
   resetMatch: () => void;
@@ -58,6 +72,7 @@ const initialInningsState: InningsState = {
   currentBatsmanIndex: 0,
   currentBowlerIndex: 0,
   ballHistory: [],
+  bowlerStats: {},
 };
 
 export const useBattleStore = create<BattleStore>((set, get) => ({
@@ -77,6 +92,13 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
   currentBowler: null,
   lastBallResult: null,
   isAnimating: false,
+
+  needsBowlerSelection: false,
+  needsFieldPlacement: false,
+  selectedFieldPlacement: null,
+  aiFieldPlacement: null,
+  maxOversPerBowler: 2,
+  specialDeliveryCooldowns: {},
 
   totalOvers: 5,
   totalBalls: 30,
@@ -133,6 +155,10 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
       phase: isBattingTeam ? 'batting' : 'bowling',
       currentBatsman,
       currentBowler,
+      needsBowlerSelection: !isBattingTeam, // Player picks bowler when bowling
+      needsFieldPlacement: !isBattingTeam,  // Player picks field when bowling
+      selectedFieldPlacement: null,
+      aiFieldPlacement: null,
       playerInnings: currentInnings === 1 && playerBattingFirst
         ? { ...initialInningsState }
         : get().playerInnings,
@@ -144,7 +170,9 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
 
   recordBall: (outcome) => {
     const {
+      phase,
       currentInnings,
+      currentBowler,
       playerBattingFirst,
       playerInnings,
       opponentInnings,
@@ -165,6 +193,24 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
       ? currentState.ballsThisOver
       : (currentState.ballsThisOver + 1) % 6;
     const newOvers = Math.floor(newBalls / 6);
+    const isOverChange = newBallsThisOver === 0 && ballsToAdd > 0;
+
+    // Update bowler stats
+    const bowlerId = currentBowler?.id || '';
+    const existingBowlerStats = currentState.bowlerStats[bowlerId] || {
+      overs: 0, balls: 0, runsConceded: 0, wickets: 0, economy: 0,
+    };
+    const newBowlerBalls = existingBowlerStats.balls + ballsToAdd;
+    const newBowlerOvers = Math.floor(newBowlerBalls / 6);
+    const newBowlerRuns = existingBowlerStats.runsConceded + outcome.runs;
+    const newBowlerWickets = existingBowlerStats.wickets + (outcome.isWicket ? 1 : 0);
+    const updatedBowlerStats: BowlerSpellStats = {
+      overs: newBowlerOvers,
+      balls: newBowlerBalls,
+      runsConceded: newBowlerRuns,
+      wickets: newBowlerWickets,
+      economy: newBowlerBalls > 0 ? (newBowlerRuns / newBowlerBalls) * 6 : 0,
+    };
 
     const newState: InningsState = {
       runs: currentState.runs + outcome.runs,
@@ -175,17 +221,31 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
       currentBatsmanIndex: outcome.isWicket
         ? currentState.currentBatsmanIndex + 1
         : currentState.currentBatsmanIndex,
-      currentBowlerIndex: newBallsThisOver === 0 && ballsToAdd > 0
+      currentBowlerIndex: isOverChange
         ? (currentState.currentBowlerIndex + 1) % 2
         : currentState.currentBowlerIndex,
       ballHistory: [...currentState.ballHistory, outcome],
+      bowlerStats: {
+        ...currentState.bowlerStats,
+        [bowlerId]: updatedBowlerStats,
+      },
     };
 
+    const updates: Partial<BattleStore> = {};
     if (isPlayerBatting) {
-      set({ playerInnings: newState });
+      updates.playerInnings = newState;
     } else {
-      set({ opponentInnings: newState });
+      updates.opponentInnings = newState;
     }
+
+    // In bowling phase, player picks bowler and field at each over change
+    if (phase === 'bowling' && isOverChange) {
+      updates.needsBowlerSelection = true;
+      updates.needsFieldPlacement = true;
+      updates.selectedFieldPlacement = null;
+    }
+
+    set(updates);
 
     // Check for innings end
     const isChaseComplete =
@@ -247,9 +307,40 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
     set({ currentBowler: nextBowler });
   },
 
+  selectBowler: (bowlerId: string) => {
+    const { playerTeam } = get();
+    if (!playerTeam) return;
+
+    const bowler = playerTeam.players.find(p => p.id === bowlerId);
+    if (bowler) {
+      set({ currentBowler: bowler, needsBowlerSelection: false });
+    }
+  },
+
   setLastBallResult: (result) => set({ lastBallResult: result }),
 
   setIsAnimating: (animating) => set({ isAnimating: animating }),
+
+  setNeedsBowlerSelection: (needs) => set({ needsBowlerSelection: needs }),
+
+  setFieldPlacement: (placement) => set({ selectedFieldPlacement: placement, needsFieldPlacement: false }),
+
+  setAIFieldPlacement: (placement) => set({ aiFieldPlacement: placement }),
+
+  useSpecialDelivery: (bowlerId, cooldown) => set((state) => ({
+    specialDeliveryCooldowns: {
+      ...state.specialDeliveryCooldowns,
+      [bowlerId]: cooldown,
+    },
+  })),
+
+  tickCooldowns: () => set((state) => {
+    const updated: Record<string, number> = {};
+    for (const [id, cd] of Object.entries(state.specialDeliveryCooldowns)) {
+      if (cd > 1) updated[id] = cd - 1;
+    }
+    return { specialDeliveryCooldowns: updated };
+  }),
 
   endInnings: () => {
     const { currentInnings, playerInnings, opponentInnings, playerBattingFirst } = get();
@@ -291,6 +382,11 @@ export const useBattleStore = create<BattleStore>((set, get) => ({
     currentBowler: null,
     lastBallResult: null,
     isAnimating: false,
+    needsBowlerSelection: false,
+    needsFieldPlacement: false,
+    selectedFieldPlacement: null,
+    aiFieldPlacement: null,
+    specialDeliveryCooldowns: {},
   }),
 
   addTrophyPoints: (points) => set((state) => ({

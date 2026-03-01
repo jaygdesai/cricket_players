@@ -2,16 +2,20 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBattleStore } from '../../store/battleStore';
 import { useGameStore } from '../../store/useGameStore';
-import type { ShotType, MatchRewards } from '../../types';
+import type { ShotType, DeliveryType, SpecialDeliveryType, MatchRewards } from '../../types';
 import {
   simulateBall,
+  simulateSpecialBall,
   selectAIShot,
   selectAIDelivery,
+  selectAIFieldPlacement,
   calculateMatchRewards,
+  SPECIAL_DELIVERY_CONFIGS,
 } from '../../utils/battleEngine';
 import Scoreboard from './Scoreboard';
-import { ShotSelector } from './ShotSelector';
+import { ShotSelector, DeliverySelector, FieldPlacementSelector } from './ShotSelector';
 import BallResult from './BallResult';
+import BowlerSelector from './BowlerSelector';
 
 export default function BattleArena() {
   const {
@@ -37,6 +41,17 @@ export default function BattleArena() {
     recordBall,
     nextBatsman,
     nextBowler,
+    selectBowler,
+    needsBowlerSelection,
+    needsFieldPlacement,
+    selectedFieldPlacement,
+    setFieldPlacement,
+    setAIFieldPlacement,
+    aiFieldPlacement,
+    maxOversPerBowler,
+    specialDeliveryCooldowns,
+    useSpecialDelivery,
+    tickCooldowns,
     setLastBallResult,
     setIsAnimating,
     endMatch,
@@ -57,81 +72,87 @@ export default function BattleArena() {
     }
   }, [phase, playerTeam, opponentTeam, performToss]);
 
-  // Auto-play for AI turn
-  const handleAITurn = useCallback(() => {
+  // Handle player delivery selection during bowling phase
+  const handleDeliverySelection = (delivery: DeliveryType) => {
     if (!currentBatsman || !currentBowler || isAnimating) return;
 
     setIsAnimating(true);
 
-    // AI is batting - select shot
-    if (!isPlayerBatting) {
-      const aiShot = selectAIShot(
-        currentBatsman,
-        currentBowler,
-        opponentInnings.runs,
-        currentInnings === 2 ? (firstInningsScore ?? 0) + 1 : null,
-        totalBalls - opponentInnings.balls,
-        4 - opponentInnings.wickets
-      );
+    // AI batsman selects shot
+    const aiShot = selectAIShot(
+      currentBatsman,
+      currentBowler,
+      opponentInnings.runs,
+      currentInnings === 2 ? (firstInningsScore ?? 0) + 1 : null,
+      totalBalls - opponentInnings.balls,
+      4 - opponentInnings.wickets
+    );
 
-      // Player's bowler - use default delivery for AI
-      const aiDelivery = selectAIDelivery(
-        currentBatsman,
-        currentBowler,
-        5 - opponentInnings.overs,
-        currentInnings === 2 ? 4 - opponentInnings.wickets : 5
-      );
+    const result = simulateBall(currentBatsman, currentBowler, aiShot, delivery, selectedFieldPlacement || undefined);
+    setLastBallResult(result);
+    recordBall(result);
+    tickCooldowns();
 
-      const result = simulateBall(currentBatsman, currentBowler, aiShot, aiDelivery);
-      setLastBallResult(result);
-      recordBall(result);
-
-      if (result.isWicket) {
-        setTimeout(() => nextBatsman(), 100);
-      }
+    if (result.isWicket) {
+      setTimeout(() => nextBatsman(), 100);
     }
-    // AI is bowling - player bats (handled by ShotSelector)
-    // AI is fielding - player bowls (handled by DeliverySelector)
-  }, [
-    currentBatsman,
-    currentBowler,
-    isAnimating,
-    isPlayerBatting,
-    currentInnings,
-    firstInningsScore,
-    opponentInnings,
-    totalBalls,
-    setIsAnimating,
-    setLastBallResult,
-    recordBall,
-    nextBatsman,
-  ]);
+  };
+
+  // Handle special delivery selection during bowling phase
+  const handleSpecialDeliverySelection = (specialDelivery: SpecialDeliveryType) => {
+    if (!currentBatsman || !currentBowler || isAnimating) return;
+
+    setIsAnimating(true);
+
+    // AI batsman selects shot
+    const aiShot = selectAIShot(
+      currentBatsman,
+      currentBowler,
+      opponentInnings.runs,
+      currentInnings === 2 ? (firstInningsScore ?? 0) + 1 : null,
+      totalBalls - opponentInnings.balls,
+      4 - opponentInnings.wickets
+    );
+
+    const result = simulateSpecialBall(currentBatsman, currentBowler, aiShot, specialDelivery, selectedFieldPlacement || undefined);
+    setLastBallResult(result);
+    recordBall(result);
+
+    // Apply cooldown
+    const config = SPECIAL_DELIVERY_CONFIGS[specialDelivery];
+    useSpecialDelivery(currentBowler.id, config.cooldown);
+    tickCooldowns();
+
+    if (result.isWicket) {
+      setTimeout(() => nextBatsman(), 100);
+    }
+  };
 
   // Handle ball result dismiss
   const handleDismissResult = useCallback(() => {
     setLastBallResult(null);
     setIsAnimating(false);
 
-    // Check for over change
+    // Check for over change - auto-rotate bowler only during batting phase (AI bowling)
+    // During bowling phase, player selects bowler via BowlerSelector
     const innings = isPlayerBatting ? playerInnings : opponentInnings;
-    if (innings.ballsThisOver === 0 && innings.balls > 0) {
+    if (innings.ballsThisOver === 0 && innings.balls > 0 && phase === 'batting') {
       nextBowler();
     }
-  }, [isPlayerBatting, playerInnings, opponentInnings, setLastBallResult, setIsAnimating, nextBowler]);
+  }, [isPlayerBatting, playerInnings, opponentInnings, phase, setLastBallResult, setIsAnimating, nextBowler]);
 
-  // Auto-play AI turns when it's their batting turn
+  // AI picks field placement at the start of each over during batting phase
   useEffect(() => {
-    if (phase === 'bowling' && !isAnimating && currentBatsman && currentBowler) {
-      const timeout = setTimeout(() => {
-        handleAITurn();
-        // Auto-dismiss result after a short delay during bowling phase
-        setTimeout(() => {
-          handleDismissResult();
-        }, 1200);
-      }, 1000);
-      return () => clearTimeout(timeout);
+    if (phase === 'batting' && playerInnings.ballsThisOver === 0) {
+      const aiField = selectAIFieldPlacement(
+        5 - playerInnings.overs,
+        currentInnings === 1 ? 5 : 4 - playerInnings.wickets,
+        playerInnings.runs,
+        currentInnings === 2 ? (firstInningsScore ?? 0) + 1 : null
+      );
+      setAIFieldPlacement(aiField);
     }
-  }, [phase, isAnimating, handleAITurn, currentBatsman, currentBowler, handleDismissResult]);
+  }, [phase, playerInnings.overs, playerInnings.ballsThisOver]);
 
   // Handle player shot selection
   const handleShotSelection = (shot: ShotType) => {
@@ -147,7 +168,7 @@ export default function BattleArena() {
       currentInnings === 1 ? 5 : 4 - playerInnings.wickets
     );
 
-    const result = simulateBall(currentBatsman, currentBowler, shot, aiDelivery);
+    const result = simulateBall(currentBatsman, currentBowler, shot, aiDelivery, aiFieldPlacement || undefined);
     setLastBallResult(result);
     recordBall(result);
 
@@ -448,17 +469,30 @@ export default function BattleArena() {
               />
             )}
 
-            {phase === 'bowling' && currentBatsman && currentBowler && (
-              <div className="text-center py-4">
-                <p className="text-slate-400 mb-2">AI is batting...</p>
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                  className="inline-block text-3xl"
-                >
-                  🏏
-                </motion.div>
-              </div>
+            {phase === 'bowling' && currentBatsman && (
+              needsBowlerSelection ? (
+                <BowlerSelector
+                  bowlers={playerTeam?.players.filter(p =>
+                    p.role === 'bowler' || p.role === 'all-rounder'
+                  ) || []}
+                  bowlerStats={opponentInnings.bowlerStats}
+                  maxOversPerBowler={maxOversPerBowler}
+                  onSelectBowler={selectBowler}
+                />
+              ) : needsFieldPlacement ? (
+                <FieldPlacementSelector
+                  onSelectField={setFieldPlacement}
+                />
+              ) : currentBowler ? (
+                <DeliverySelector
+                  batsman={currentBatsman}
+                  bowler={currentBowler}
+                  onSelectDelivery={handleDeliverySelection}
+                  onSelectSpecialDelivery={handleSpecialDeliverySelection}
+                  specialDeliveryCooldown={specialDeliveryCooldowns[currentBowler.id] || 0}
+                  disabled={isAnimating}
+                />
+              ) : null
             )}
           </motion.div>
         )}

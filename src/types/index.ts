@@ -92,6 +92,29 @@ export const RARITY_GRADIENTS: RarityColor = {
 // Battle Types
 export type ShotType = 'defend' | 'push' | 'attack' | 'slog';
 export type DeliveryType = 'line_length' | 'yorker' | 'bouncer' | 'slower';
+export type SpecialDeliveryType = 'doosra' | 'reverse_swing' | 'knuckleball' | 'carrom_ball';
+
+export interface SpecialDeliveryConfig {
+  type: SpecialDeliveryType;
+  label: string;
+  icon: string;
+  wicketChance: number;
+  runModifier: number;
+  requiredRarity: 'epic' | 'legendary';
+  extraChance: number;         // % chance of bowling an extra (wide/no-ball)
+  extraType: 'wide' | 'no_ball';
+  cooldown: number;            // balls before can be used again
+}
+export type FieldPlacement = 'aggressive' | 'defensive' | 'slip_cordon' | 'spread';
+
+export interface FieldPlacementConfig {
+  type: FieldPlacement;
+  label: string;
+  icon: string;
+  wicketModifier: number;    // % change to wicket chance
+  runModifier: number;       // flat +/- to runs scored
+  boundaryModifier: number;  // % change to boundary chance
+}
 
 export interface ShotConfig {
   type: ShotType;
@@ -122,6 +145,14 @@ export interface BallOutcome {
   deliveryType: DeliveryType;
 }
 
+export interface BowlerSpellStats {
+  overs: number;
+  balls: number;
+  runsConceded: number;
+  wickets: number;
+  economy: number;
+}
+
 export interface InningsState {
   runs: number;
   wickets: number;
@@ -131,6 +162,7 @@ export interface InningsState {
   currentBatsmanIndex: number;
   currentBowlerIndex: number;
   ballHistory: BallOutcome[];
+  bowlerStats: Record<string, BowlerSpellStats>;
 }
 
 export interface BattleTeam {

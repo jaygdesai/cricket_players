@@ -1,6 +1,14 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useBattleStore } from '../../store/battleStore';
 import { formatOvers, calculateRequiredRunRate } from '../../utils/battleEngine';
+import type { BowlerSpellStats } from '../../types';
+
+function formatBowlingFigures(stats: BowlerSpellStats): string {
+  const ballsInOver = stats.balls % 6;
+  const overs = ballsInOver === 0 ? `${stats.overs}` : `${stats.overs}.${ballsInOver}`;
+  return `${overs}-${stats.runsConceded}-${stats.wickets}`;
+}
 
 export default function Scoreboard() {
   const {
@@ -12,7 +20,10 @@ export default function Scoreboard() {
     playerBattingFirst,
     firstInningsScore,
     totalBalls,
+    phase,
   } = useBattleStore();
+
+  const [showBowlingFigures, setShowBowlingFigures] = useState(false);
 
   const isPlayerBatting = currentInnings === 1
     ? playerBattingFirst
@@ -146,6 +157,51 @@ export default function Scoreboard() {
           )}
         </div>
       </div>
+
+      {/* Bowling figures toggle */}
+      {Object.keys(battingInnings.bowlerStats).length > 0 && (
+        <div className="mt-3 pt-3 border-t border-slate-700">
+          <button
+            onClick={() => setShowBowlingFigures(!showBowlingFigures)}
+            className="text-xs text-slate-400 hover:text-slate-300 transition-colors w-full text-left flex items-center justify-between"
+          >
+            <span>Bowling Figures</span>
+            <span>{showBowlingFigures ? '▲' : '▼'}</span>
+          </button>
+          {showBowlingFigures && (
+            <div className="mt-2 space-y-1">
+              <div className="grid grid-cols-5 gap-1 text-xs text-slate-500 font-medium">
+                <span className="col-span-2">Bowler</span>
+                <span className="text-center">O-R-W</span>
+                <span className="text-center">Econ</span>
+                <span></span>
+              </div>
+              {(() => {
+                const bowlingTeamPlayers = isPlayerBatting
+                  ? (opponentTeam?.players || [])
+                  : (playerTeam?.players || []);
+                return Object.entries(battingInnings.bowlerStats).map(([bowlerId, stats]) => {
+                  const bowler = bowlingTeamPlayers.find(p => p.id === bowlerId);
+                  return (
+                    <div key={bowlerId} className="grid grid-cols-5 gap-1 text-xs">
+                      <span className="col-span-2 text-white truncate">{bowler?.name || 'Unknown'}</span>
+                      <span className="text-center text-slate-300 font-mono">{formatBowlingFigures(stats)}</span>
+                      <span className={`text-center font-medium ${
+                        stats.economy <= 6 ? 'text-green-400' :
+                        stats.economy <= 9 ? 'text-yellow-400' :
+                        'text-red-400'
+                      }`}>
+                        {stats.economy.toFixed(1)}
+                      </span>
+                      <span></span>
+                    </div>
+                  );
+                });
+              })()}
+            </div>
+          )}
+        </div>
+      )}
     </motion.div>
   );
 }
